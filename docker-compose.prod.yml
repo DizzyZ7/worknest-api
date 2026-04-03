@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: worknest
+      POSTGRES_PASSWORD: worknest
+      POSTGRES_DB: worknest
+    ports:
+      - "5432:5432"
+
+  api:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://worknest:worknest@db:5432/worknest
+    ports:
+      - "8000:8000"
