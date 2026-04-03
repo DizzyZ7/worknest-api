@@ -1,22 +1,42 @@
-# WorkNest API (Skeleton)
+# WorkNest API
 
-This is a minimal skeleton for the WorkNest API project using FastAPI. It includes:
+Production-ready FastAPI service with incidents module, PostgreSQL-ready database wiring, Docker support, and a single canonical launch path.
 
-- **FastAPI** application (`app/main.py`)
-- **Dockerfile** to build a container
-- **docker-compose.yml** to run the service
-- **requirements.txt** for Python dependencies
+## Stack
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Alembic
+- Docker / Docker Compose
+- Pytest
 
-Run the API locally with:
-
+## Project run (local)
 ```bash
+pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Or build and run with Docker:
-
+## Project run (production-like)
 ```bash
-docker-compose up --build
+docker-compose -f docker-compose.prod.yml up --build
 ```
 
-Visit `http://localhost:8000` for the root endpoint and `http://localhost:8000/health` for a healthcheck.
+## API
+- `GET /health`
+- `GET /api/v1/info`
+- `GET /api/v1/incidents`
+- `POST /api/v1/incidents`
+
+## Environment
+Main environment variable:
+- `DATABASE_URL`
+
+Example for docker compose:
+```env
+DATABASE_URL=postgresql://worknest:worknest@db:5432/worknest
+```
+
+## Notes
+- `app/main.py` is the only application entrypoint.
+- `requirements.txt` is the only dependency file.
+- `README.md` is the only project readme.
