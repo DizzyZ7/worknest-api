@@ -1,19 +1,16 @@
 from fastapi import FastAPI
-from app.core.config import settings
-from app.api.v1.router import router as api_router
+from app.core.settings_prod import settings
+from app.api.v1.router import router
+from app.db.session import engine, Base
 
 
-def create_app() -> FastAPI:
-    app = FastAPI(title=settings.app_name, version=settings.version)
+def create_app():
+    app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
-    @app.get("/")
-    def read_root():
-        return {"message": f"Welcome to {settings.app_name}"}
+    @app.on_event("startup")
+    def startup():
+        Base.metadata.create_all(bind=engine)
 
-    @app.get("/health")
-    def healthcheck():
-        return {"status": "ok", "version": settings.version}
-
-    app.include_router(api_router, prefix=settings.api_v1_prefix)
+    app.include_router(router, prefix=settings.API_V1_PREFIX)
 
     return app
