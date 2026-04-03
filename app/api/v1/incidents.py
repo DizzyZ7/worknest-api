@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal, Base, engine
-from app.models.incident import Incident
+from app.db.session import SessionLocal
+from app.schemas.incident import IncidentCreate, IncidentRead
+from app.services.incident_service import create_incident, get_incidents
 
 router = APIRouter()
-
-Base.metadata.create_all(bind=engine)
 
 
 def get_db():
@@ -16,15 +15,11 @@ def get_db():
         db.close()
 
 
-@router.post("/incidents")
-def create_incident(title: str, db: Session = Depends(get_db)):
-    incident = Incident(title=title)
-    db.add(incident)
-    db.commit()
-    db.refresh(incident)
-    return incident
+@router.post("/incidents", response_model=IncidentRead)
+def create_incident_endpoint(data: IncidentCreate, db: Session = Depends(get_db)):
+    return create_incident(db, data)
 
 
-@router.get("/incidents")
-def list_incidents(db: Session = Depends(get_db)):
-    return db.query(Incident).all()
+@router.get("/incidents", response_model=list[IncidentRead])
+def list_incidents_endpoint(db: Session = Depends(get_db)):
+    return get_incidents(db)
